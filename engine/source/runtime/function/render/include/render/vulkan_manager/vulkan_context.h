@@ -58,6 +58,14 @@ namespace Pilot
         // asset allocator use VMA library
         VmaAllocator _assets_allocator;
 
+        // MSAA config
+        bool                  _enable_msaa       = false;
+        VkSampleCountFlagBits _msaa_sample_count = VK_SAMPLE_COUNT_1_BIT;
+
+        VkImage        _msaa_depth_image        = VK_NULL_HANDLE;
+        VkDeviceMemory _msaa_depth_image_memory = VK_NULL_HANDLE;
+        VkImageView    _msaa_depth_image_view   = VK_NULL_HANDLE;
+
         void initialize(GLFWwindow* window);
         void clear();
 
@@ -136,5 +144,7 @@ namespace Pilot
         VkPresentModeKHR
                    chooseSwapchainPresentModeFromDetails(const std::vector<VkPresentModeKHR>& available_present_modes);
         VkExtent2D chooseSwapchainExtentFromDetails(const VkSurfaceCapabilitiesKHR& capabilities);
+
+        VkSampleCountFlagBits getMaxUsableSampleCount();
     };
 } // namespace Pilot

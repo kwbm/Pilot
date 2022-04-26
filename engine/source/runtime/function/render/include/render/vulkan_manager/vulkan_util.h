@@ -47,7 +47,8 @@ namespace Pilot
                                           VkDeviceMemory&       memory,
                                           VkImageCreateFlags    image_create_flags,
                                           uint32_t              array_layers,
-                                          uint32_t              miplevels);
+                                          uint32_t              miplevels,
+                                          VkSampleCountFlagBits sample_count = VK_SAMPLE_COUNT_1_BIT);
         static VkImageView    createImageView(VkDevice           device,
                                               VkImage&           image,
                                               VkFormat           format,

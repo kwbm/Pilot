@@ -49,14 +49,15 @@ namespace Pilot
         VulkanScenePointLight       scene_point_lights[m_max_point_light_count];
         VulkanSceneDirectionalLight scene_directional_light;
         glm::mat4                   directional_light_proj_view;
+        uint32_t                    msaa_sample_count;
     };
 
     struct VulkanMeshInstance
     {
-        float enable_vertex_blending;
-        float _padding_enable_vertex_blending_1;
-        float _padding_enable_vertex_blending_2;
-        float _padding_enable_vertex_blending_3;
+        float     enable_vertex_blending;
+        float     _padding_enable_vertex_blending_1;
+        float     _padding_enable_vertex_blending_2;
+        float     _padding_enable_vertex_blending_3;
         glm::mat4 model_matrix;
     };
 

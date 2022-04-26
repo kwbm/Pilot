@@ -81,8 +81,9 @@ namespace Pilot
         _main_camera_pass_backup_buffer_even      = 4,
         _main_camera_pass_depth                   = 5,
         _main_camera_pass_swap_chain_image        = 6,
+        _main_camera_pass_msaa_depth              = 7,
         _main_camera_pass_custom_attachment_count = 5,
-        _main_camera_pass_attachment_count        = 7,
+        _main_camera_pass_attachment_count        = 8,
     };
 
     enum

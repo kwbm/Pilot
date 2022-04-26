@@ -10,6 +10,7 @@
 #include <axis_frag.h>
 #include <axis_vert.h>
 #include <deferred_lighting_frag.h>
+#include <deferred_lighting_msaa_frag.h>
 #include <deferred_lighting_vert.h>
 #include <mesh_frag.h>
 #include <mesh_gbuffer_frag.h>
@@ -49,7 +50,35 @@ namespace Pilot
         _framebuffer.attachments[_main_camera_pass_backup_buffer_odd].format  = VK_FORMAT_R16G16B16A16_SFLOAT;
         _framebuffer.attachments[_main_camera_pass_backup_buffer_even].format = VK_FORMAT_R16G16B16A16_SFLOAT;
 
-        for (int i = 0; i < _main_camera_pass_custom_attachment_count; ++i)
+        // MSAA G-Buffer
+        for (int i = 0; i < _main_camera_pass_backup_buffer_odd; ++i)
+        {
+            PVulkanUtil::createImage(m_p_vulkan_context->_physical_device,
+                                     m_p_vulkan_context->_device,
+                                     m_p_vulkan_context->_swapchain_extent.width,
+                                     m_p_vulkan_context->_swapchain_extent.height,
+                                     _framebuffer.attachments[i].format,
+                                     VK_IMAGE_TILING_OPTIMAL,
+                                     VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT |
+                                         VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT,
+                                     VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                                     _framebuffer.attachments[i].image,
+                                     _framebuffer.attachments[i].mem,
+                                     0,
+                                     1,
+                                     1,
+                                     m_p_vulkan_context->_msaa_sample_count);
+
+            _framebuffer.attachments[i].view = PVulkanUtil::createImageView(m_p_vulkan_context->_device,
+                                                                            _framebuffer.attachments[i].image,
+                                                                            _framebuffer.attachments[i].format,
+                                                                            VK_IMAGE_ASPECT_COLOR_BIT,
+                                                                            VK_IMAGE_VIEW_TYPE_2D,
+                                                                            1,
+                                                                            1);
+        }
+
+        for (int i = _main_camera_pass_backup_buffer_odd; i < _main_camera_pass_custom_attachment_count; ++i)
         {
             PVulkanUtil::createImage(m_p_vulkan_context->_physical_device,
                                      m_p_vulkan_context->_device,
@@ -82,7 +111,7 @@ namespace Pilot
 
         VkAttachmentDescription& gbuffer_normal_attachment_description = attachments[_main_camera_pass_gbuffer_a];
         gbuffer_normal_attachment_description.format  = _framebuffer.attachments[_main_camera_pass_gbuffer_a].format;
-        gbuffer_normal_attachment_description.samples = VK_SAMPLE_COUNT_1_BIT;
+        gbuffer_normal_attachment_description.samples = m_p_vulkan_context->_msaa_sample_count;
         gbuffer_normal_attachment_description.loadOp  = VK_ATTACHMENT_LOAD_OP_CLEAR;
         gbuffer_normal_attachment_description.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
         gbuffer_normal_attachment_description.stencilLoadOp  = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
@@ -94,7 +123,8 @@ namespace Pilot
             attachments[_main_camera_pass_gbuffer_b];
         gbuffer_metallic_roughness_shadingmodeid_attachment_description.format =
             _framebuffer.attachments[_main_camera_pass_gbuffer_b].format;
-        gbuffer_metallic_roughness_shadingmodeid_attachment_description.samples = VK_SAMPLE_COUNT_1_BIT;
+        gbuffer_metallic_roughness_shadingmodeid_attachment_description.samples =
+            m_p_vulkan_context->_msaa_sample_count;
         gbuffer_metallic_roughness_shadingmodeid_attachment_description.loadOp  = VK_ATTACHMENT_LOAD_OP_CLEAR;
         gbuffer_metallic_roughness_shadingmodeid_attachment_description.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
         gbuffer_metallic_roughness_shadingmodeid_attachment_description.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
@@ -106,7 +136,7 @@ namespace Pilot
 
         VkAttachmentDescription& gbuffer_albedo_attachment_description = attachments[_main_camera_pass_gbuffer_c];
         gbuffer_albedo_attachment_description.format  = _framebuffer.attachments[_main_camera_pass_gbuffer_c].format;
-        gbuffer_albedo_attachment_description.samples = VK_SAMPLE_COUNT_1_BIT;
+        gbuffer_albedo_attachment_description.samples = m_p_vulkan_context->_msaa_sample_count;
         gbuffer_albedo_attachment_description.loadOp  = VK_ATTACHMENT_LOAD_OP_CLEAR;
         gbuffer_albedo_attachment_description.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
         gbuffer_albedo_attachment_description.stencilLoadOp  = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
@@ -137,6 +167,16 @@ namespace Pilot
         backup_even_color_attachment_description.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
         backup_even_color_attachment_description.initialLayout  = VK_IMAGE_LAYOUT_UNDEFINED;
         backup_even_color_attachment_description.finalLayout    = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
+        VkAttachmentDescription& msaa_depth_attachment_description = attachments[_main_camera_pass_msaa_depth];
+        msaa_depth_attachment_description.format                   = m_p_vulkan_context->_depth_image_format;
+        msaa_depth_attachment_description.samples                  = m_p_vulkan_context->_msaa_sample_count;
+        msaa_depth_attachment_description.loadOp                   = VK_ATTACHMENT_LOAD_OP_CLEAR;
+        msaa_depth_attachment_description.storeOp                  = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+        msaa_depth_attachment_description.stencilLoadOp            = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+        msaa_depth_attachment_description.stencilStoreOp           = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+        msaa_depth_attachment_description.initialLayout            = VK_IMAGE_LAYOUT_UNDEFINED;
+        msaa_depth_attachment_description.finalLayout              = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
         VkAttachmentDescription& depth_attachment_description = attachments[_main_camera_pass_depth];
         depth_attachment_description.format                   = m_p_vulkan_context->_depth_image_format;
@@ -171,7 +211,7 @@ namespace Pilot
         base_pass_color_attachments_reference[2].layout     = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
         VkAttachmentReference base_pass_depth_attachment_reference {};
-        base_pass_depth_attachment_reference.attachment = &depth_attachment_description - attachments;
+        base_pass_depth_attachment_reference.attachment = &msaa_depth_attachment_description - attachments;
         base_pass_depth_attachment_reference.layout     = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
         VkSubpassDescription& base_pass = subpasses[_main_camera_subpass_basepass];
@@ -192,9 +232,10 @@ namespace Pilot
         deferred_lighting_pass_input_attachments_reference[1].layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
         deferred_lighting_pass_input_attachments_reference[2].attachment =
             &gbuffer_albedo_attachment_description - attachments;
-        deferred_lighting_pass_input_attachments_reference[2].layout     = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-        deferred_lighting_pass_input_attachments_reference[3].attachment = &depth_attachment_description - attachments;
-        deferred_lighting_pass_input_attachments_reference[3].layout     = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        deferred_lighting_pass_input_attachments_reference[2].layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        deferred_lighting_pass_input_attachments_reference[3].attachment =
+            &msaa_depth_attachment_description - attachments;
+        deferred_lighting_pass_input_attachments_reference[3].layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
         VkAttachmentReference deferred_lighting_pass_color_attachment_reference[1] = {};
         deferred_lighting_pass_color_attachment_reference[0].attachment =
@@ -209,7 +250,7 @@ namespace Pilot
         deferred_lighting_pass.colorAttachmentCount = sizeof(deferred_lighting_pass_color_attachment_reference) /
                                                       sizeof(deferred_lighting_pass_color_attachment_reference[0]);
         deferred_lighting_pass.pColorAttachments       = &deferred_lighting_pass_color_attachment_reference[0];
-        deferred_lighting_pass.pDepthStencilAttachment = NULL;
+        deferred_lighting_pass.pDepthStencilAttachment = NULL; ////
         deferred_lighting_pass.preserveAttachmentCount = 0;
         deferred_lighting_pass.pPreserveAttachments    = NULL;
 
@@ -809,7 +850,7 @@ namespace Pilot
             VkPipelineMultisampleStateCreateInfo multisample_state_create_info {};
             multisample_state_create_info.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
             multisample_state_create_info.sampleShadingEnable  = VK_FALSE;
-            multisample_state_create_info.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+            multisample_state_create_info.rasterizationSamples = m_p_vulkan_context->_msaa_sample_count;
 
             VkPipelineColorBlendAttachmentState color_blend_attachments[3] = {};
             color_blend_attachments[0].colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
@@ -920,8 +961,17 @@ namespace Pilot
 
             VkShaderModule vert_shader_module =
                 PVulkanUtil::createShaderModule(m_p_vulkan_context->_device, DEFERRED_LIGHTING_VERT);
-            VkShaderModule frag_shader_module =
-                PVulkanUtil::createShaderModule(m_p_vulkan_context->_device, DEFERRED_LIGHTING_FRAG);
+            VkShaderModule frag_shader_module = VK_NULL_HANDLE;
+            if (m_p_vulkan_context->_enable_msaa)
+            {
+                frag_shader_module =
+                    PVulkanUtil::createShaderModule(m_p_vulkan_context->_device, DEFERRED_LIGHTING_MSAA_FRAG);
+            }
+            else
+            {
+                frag_shader_module =
+                    PVulkanUtil::createShaderModule(m_p_vulkan_context->_device, DEFERRED_LIGHTING_FRAG);
+            }
 
             VkPipelineShaderStageCreateInfo vert_pipeline_shader_stage_create_info {};
             vert_pipeline_shader_stage_create_info.sType  = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -1965,7 +2015,7 @@ namespace Pilot
         VkDescriptorImageInfo depth_input_attachment_info = {};
         depth_input_attachment_info.sampler =
             PVulkanUtil::getOrCreateNearestSampler(m_p_vulkan_context->_physical_device, m_p_vulkan_context->_device);
-        depth_input_attachment_info.imageView   = m_p_vulkan_context->_depth_image_view;
+        depth_input_attachment_info.imageView   = m_p_vulkan_context->_msaa_depth_image_view;
         depth_input_attachment_info.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
         VkWriteDescriptorSet deferred_lighting_descriptor_writes_info[4];
@@ -2042,7 +2092,8 @@ namespace Pilot
                 _framebuffer.attachments[_main_camera_pass_backup_buffer_odd].view,
                 _framebuffer.attachments[_main_camera_pass_backup_buffer_even].view,
                 m_p_vulkan_context->_depth_image_view,
-                m_p_vulkan_context->_swapchain_imageviews[i]};
+                m_p_vulkan_context->_swapchain_imageviews[i],
+                m_p_vulkan_context->_msaa_depth_image_view};
 
             VkFramebufferCreateInfo framebuffer_create_info {};
             framebuffer_create_info.sType      = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
@@ -2108,6 +2159,7 @@ namespace Pilot
             clear_values[_main_camera_pass_backup_buffer_even].color = {{0.0f, 0.0f, 0.0f, 1.0f}};
             clear_values[_main_camera_pass_depth].depthStencil       = {1.0f, 0};
             clear_values[_main_camera_pass_swap_chain_image].color   = {{0.0f, 0.0f, 0.0f, 1.0f}};
+            clear_values[_main_camera_pass_msaa_depth].depthStencil  = {1.0f, 0};
             renderpass_begin_info.clearValueCount                    = (sizeof(clear_values) / sizeof(clear_values[0]));
             renderpass_begin_info.pClearValues                       = clear_values;
 

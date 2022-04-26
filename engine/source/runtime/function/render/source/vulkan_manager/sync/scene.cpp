@@ -47,6 +47,7 @@ void Pilot::PVulkanManager::cullingAndSyncScene(class Scene&                scen
         m_mesh_perframe_storage_buffer_object.scene_directional_light.direction =
             scene.m_directional_light.m_direction.normalisedCopy();
         m_mesh_perframe_storage_buffer_object.scene_directional_light.color = scene.m_directional_light.m_color;
+        m_mesh_perframe_storage_buffer_object.msaa_sample_count             = m_vulkan_context._msaa_sample_count;
 
         m_mesh_inefficient_pick_perframe_storage_buffer_object.proj_view_matrix = proj_view_matrix;
         m_mesh_inefficient_pick_perframe_storage_buffer_object.rt_width  = m_vulkan_context._swapchain_extent.width;
