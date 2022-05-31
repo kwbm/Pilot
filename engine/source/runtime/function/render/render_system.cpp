@@ -368,5 +368,19 @@ namespace Pilot
 
             m_swap_context.resetCameraSwapData();
         }
+
+        // process particle swap data
+        if (swap_data.m_particle_swap_data.has_value())
+        {
+            m_render_scene->m_main_camera_visible_particlebillboard_nodes.resize(1);
+            m_render_scene->m_main_camera_visible_particlebillboard_nodes[0].positions =
+                std::move(swap_data.m_particle_swap_data->positions);
+            m_render_scene->m_main_camera_visible_particlebillboard_nodes[0].scales =
+                std::move(swap_data.m_particle_swap_data->scales);
+            m_render_scene->m_main_camera_visible_particlebillboard_nodes[0].colors =
+                std::move(swap_data.m_particle_swap_data->colors);
+
+            m_swap_context.resetParticleSwapData();
+        }
     }
 } // namespace Pilot

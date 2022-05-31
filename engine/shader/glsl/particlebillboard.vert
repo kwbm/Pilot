@@ -7,7 +7,14 @@ layout(set = 0, binding = 0) readonly buffer _unused_name_perframe
     vec3 up_direction;
 };
 
-layout(set = 0, binding = 1) readonly buffer _unused_name_perdrawcall { vec4 positions[4096]; };
+layout(set = 0, binding = 1) readonly buffer _unused_name_perdrawcall
+{ 
+    vec4 positions[4096];
+    vec4 scales[4096];
+    vec4 colors[4096];
+};
+
+layout(location = 0) out vec4 out_color;
 
 void main()
 {
@@ -19,6 +26,10 @@ void main()
     // 13.6.2 World-Oriented Billboard
 
     vec3 anchor_location = positions[gl_InstanceIndex].xyz;
+    vec2 particle_scale = scales[gl_InstanceIndex].xy;
+
+    model_position.x *= particle_scale.x;
+    model_position.y *= particle_scale.y;
 
     // viewport-oriented
     vec3 front_direction = eye_position - anchor_location;
@@ -32,4 +43,6 @@ void main()
 
     // world to NDC
     gl_Position = proj_view_matrix * vec4(world_position, 1.0);
+
+    out_color = colors[gl_InstanceIndex];
 }

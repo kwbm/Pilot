@@ -36,14 +36,21 @@ namespace Pilot
         std::optional<Matrix4x4>        m_view_matrix;
     };
 
+    struct ParticleSwapData
+    {
+        std::vector<Vector4> positions;
+        std::vector<Vector4> scales;
+        std::vector<Vector4> colors;
+    };
+
     struct GameObjectResourceDesc
     {
         std::deque<GameObjectDesc> m_game_object_descs;
 
-        void                       add(GameObjectDesc desc);
-        bool                       isEmpty() const;
-        GameObjectDesc             getNextProcessObject();
-        void                       popProcessObject();
+        void           add(GameObjectDesc desc);
+        bool           isEmpty() const;
+        GameObjectDesc getNextProcessObject();
+        void           popProcessObject();
     };
 
     struct RenderSwapData
@@ -52,6 +59,7 @@ namespace Pilot
         std::optional<GameObjectResourceDesc> m_game_object_resource_desc;
         std::optional<GameObjectResourceDesc> m_game_object_to_delete;
         std::optional<CameraSwapData>         m_camera_swap_data;
+        std::optional<ParticleSwapData>       m_particle_swap_data;
 
         void addDirtyGameObject(GameObjectDesc desc);
         void addDeleteGameObject(GameObjectDesc desc);
@@ -74,6 +82,7 @@ namespace Pilot
         void            resetGameObjectResourceSwapData();
         void            resetGameObjectToDelete();
         void            resetCameraSwapData();
+        void            resetParticleSwapData();
 
     private:
         uint8_t        m_logic_swap_data_index {LogicSwapDataType};

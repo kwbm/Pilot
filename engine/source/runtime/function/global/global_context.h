@@ -14,6 +14,7 @@ namespace Pilot
     class WorldManager;
     class RenderSystem;
     class WindowSystem;
+    class ParticleSystem;
 
     struct EngineInitParams;
 
@@ -37,6 +38,7 @@ namespace Pilot
         std::shared_ptr<PhysicsManager> m_physics_manager;
         std::shared_ptr<WindowSystem>   m_window_system;
         std::shared_ptr<RenderSystem>   m_render_system;
+        std::shared_ptr<ParticleSystem> m_particle_system;
     };
 
     extern RuntimeGlobalContext g_runtime_global_context;

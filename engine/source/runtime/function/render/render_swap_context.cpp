@@ -39,7 +39,8 @@ namespace Pilot
         return !(m_swap_data[m_render_swap_data_index].m_level_resource_desc.has_value() ||
                  m_swap_data[m_render_swap_data_index].m_game_object_resource_desc.has_value() ||
                  m_swap_data[m_render_swap_data_index].m_game_object_to_delete.has_value() ||
-                 m_swap_data[m_render_swap_data_index].m_camera_swap_data.has_value());
+                 m_swap_data[m_render_swap_data_index].m_camera_swap_data.has_value() ||
+                 m_swap_data[m_render_swap_data_index].m_particle_swap_data.has_value());
     }
 
     void RenderSwapContext::resetLevelRsourceSwapData()
@@ -59,12 +60,18 @@ namespace Pilot
 
     void RenderSwapContext::resetCameraSwapData() { m_swap_data[m_render_swap_data_index].m_camera_swap_data.reset(); }
 
+    void RenderSwapContext::resetParticleSwapData()
+    {
+        m_swap_data[m_render_swap_data_index].m_particle_swap_data.reset();
+    }
+
     void RenderSwapContext::swap()
     {
         resetLevelRsourceSwapData();
         resetGameObjectResourceSwapData();
         resetGameObjectToDelete();
         resetCameraSwapData();
+        resetParticleSwapData();
         std::swap(m_logic_swap_data_index, m_render_swap_data_index);
     }
 

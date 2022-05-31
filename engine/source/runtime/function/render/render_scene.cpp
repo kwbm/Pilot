@@ -242,6 +242,5 @@ namespace Pilot
     void RenderScene::updateVisibleObjectsParticle(std::shared_ptr<RenderResource> render_resource)
     {
         // TODO
-        m_main_camera_visible_particlebillboard_nodes.clear();
     }
 } // namespace Pilot
