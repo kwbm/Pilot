@@ -16,7 +16,7 @@
 #include "runtime/function/physics/physics_manager.h"
 #include "runtime/function/render/render_system.h"
 #include "runtime/function/render/window_system.h"
-#include "runtime/function/particle/particle_system.h"
+#include "runtime/function/particle/particle_manager.h"
 
 namespace Pilot
 {
@@ -53,8 +53,8 @@ namespace Pilot
         render_init_info.window_system = m_window_system;
         m_render_system->initialize(render_init_info);
 
-        m_particle_system=std::make_shared<ParticleSystem>();
-        m_particle_system->initialize();
+        m_particle_manager=std::make_shared<ParticleManager>();
+        m_particle_manager->initialize();
     }
 
     void RuntimeGlobalContext::shutdownSystems()
@@ -63,7 +63,7 @@ namespace Pilot
 
         m_window_system.reset();
 
-        m_particle_system.reset();
+        m_particle_manager.reset();
 
         m_world_manager->clear();
         m_world_manager.reset();

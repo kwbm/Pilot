@@ -63,6 +63,7 @@ namespace Pilot
 
         void addDirtyGameObject(GameObjectDesc desc);
         void addDeleteGameObject(GameObjectDesc desc);
+        void appendParticleSwapData(const ParticleSwapData& data);
     };
 
     enum SwapDataType : uint8_t

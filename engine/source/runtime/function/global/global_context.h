@@ -14,7 +14,7 @@ namespace Pilot
     class WorldManager;
     class RenderSystem;
     class WindowSystem;
-    class ParticleSystem;
+    class ParticleManager;
 
     struct EngineInitParams;
 
@@ -28,17 +28,17 @@ namespace Pilot
         void shutdownSystems();
 
     public:
-        std::shared_ptr<LogSystem>      m_logger_system;
-        std::shared_ptr<InputSystem>    m_input_system;
-        std::shared_ptr<FileSystem>     m_file_system;
-        std::shared_ptr<AssetManager>   m_asset_manager;
-        std::shared_ptr<ConfigManager>  m_config_manager;
-        std::shared_ptr<WorldManager>   m_world_manager;
-        std::shared_ptr<PhysicsSystem>  m_legacy_physics_system;
-        std::shared_ptr<PhysicsManager> m_physics_manager;
-        std::shared_ptr<WindowSystem>   m_window_system;
-        std::shared_ptr<RenderSystem>   m_render_system;
-        std::shared_ptr<ParticleSystem> m_particle_system;
+        std::shared_ptr<LogSystem>       m_logger_system;
+        std::shared_ptr<InputSystem>     m_input_system;
+        std::shared_ptr<FileSystem>      m_file_system;
+        std::shared_ptr<AssetManager>    m_asset_manager;
+        std::shared_ptr<ConfigManager>   m_config_manager;
+        std::shared_ptr<WorldManager>    m_world_manager;
+        std::shared_ptr<PhysicsSystem>   m_legacy_physics_system;
+        std::shared_ptr<PhysicsManager>  m_physics_manager;
+        std::shared_ptr<WindowSystem>    m_window_system;
+        std::shared_ptr<RenderSystem>    m_render_system;
+        std::shared_ptr<ParticleManager> m_particle_manager;
     };
 
     extern RuntimeGlobalContext g_runtime_global_context;

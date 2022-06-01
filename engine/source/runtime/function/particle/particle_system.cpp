@@ -19,10 +19,10 @@ namespace Pilot
         if (!particle_render_info.positions.empty())
         {
             ParticleSwapData particle_swap_data;
-            particle_swap_data.positions         = std::move(particle_render_info.positions);
-            particle_swap_data.scales            = std::move(particle_render_info.scales);
-            particle_swap_data.colors            = std::move(particle_render_info.colors);
-            logic_swap_data.m_particle_swap_data = particle_swap_data;
+            particle_swap_data.positions = std::move(particle_render_info.positions);
+            particle_swap_data.scales    = std::move(particle_render_info.scales);
+            particle_swap_data.colors    = std::move(particle_render_info.colors);
+            logic_swap_data.appendParticleSwapData(particle_swap_data);
         }
         else
         {
