@@ -10,7 +10,7 @@ layout(set = 0, binding = 0) readonly buffer _unused_name_perframe
 layout(set = 0, binding = 1) readonly buffer _unused_name_perdrawcall
 { 
     vec4 positions[4096];
-    vec4 scales[4096];
+    vec4 sizes[4096];
     vec4 colors[4096];
 };
 
@@ -18,7 +18,7 @@ layout(location = 0) out vec4 out_color;
 
 void main()
 {
-    const vec2 vertex_buffer[4] = vec2[4](vec2(-1.0, 1.0), vec2(1.0, 1.0), vec2(-1.0, -1.0), vec2(1.0, -1.0));
+    const vec2 vertex_buffer[4] = vec2[4](vec2(-0.5, 0.5), vec2(0.5, 0.5), vec2(-0.5, -0.5), vec2(0.5, -0.5));
     vec2       model_position   = vertex_buffer[gl_VertexIndex];
 
     // Real-Time Rendering Fourth Edition
@@ -26,10 +26,10 @@ void main()
     // 13.6.2 World-Oriented Billboard
 
     vec3 anchor_location = positions[gl_InstanceIndex].xyz;
-    vec2 particle_scale = scales[gl_InstanceIndex].xy;
+    vec2 particle_size = sizes[gl_InstanceIndex].xy;
 
-    model_position.x *= particle_scale.x;
-    model_position.y *= particle_scale.y;
+    model_position.x *= particle_size.x;
+    model_position.y *= particle_size.y;
 
     // viewport-oriented
     vec3 front_direction = eye_position - anchor_location;

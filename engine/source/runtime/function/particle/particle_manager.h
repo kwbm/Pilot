@@ -2,7 +2,7 @@
 
 #include "runtime/function/particle/particle_system.h"
 
-#include <vector>
+#include <list>
 
 namespace Pilot
 {
@@ -10,11 +10,13 @@ namespace Pilot
     {
     public:
         void initialize();
+
+        void spawn(const ParticleSystemSpawnInfo& spawn_info);
         void tick(float delta_time);
 
-        ParticleRenderInfo getParticleRenderInfo() const;
-
     private:
-        std::vector<ParticleSystem> m_particle_systems;
+        std::list<ParticleSystem> m_particle_systems;
+
+        size_t getAliveParticleCount() const;
     };
 } // namespace Pilot

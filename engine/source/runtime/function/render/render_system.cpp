@@ -375,8 +375,8 @@ namespace Pilot
             m_render_scene->m_main_camera_visible_particlebillboard_nodes.resize(1);
             m_render_scene->m_main_camera_visible_particlebillboard_nodes[0].positions =
                 std::move(swap_data.m_particle_swap_data->positions);
-            m_render_scene->m_main_camera_visible_particlebillboard_nodes[0].scales =
-                std::move(swap_data.m_particle_swap_data->scales);
+            m_render_scene->m_main_camera_visible_particlebillboard_nodes[0].sizes =
+                std::move(swap_data.m_particle_swap_data->sizes);
             m_render_scene->m_main_camera_visible_particlebillboard_nodes[0].colors =
                 std::move(swap_data.m_particle_swap_data->colors);
 

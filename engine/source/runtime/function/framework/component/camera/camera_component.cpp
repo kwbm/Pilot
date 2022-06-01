@@ -15,6 +15,8 @@
 #include "runtime/function/render/render_swap_context.h"
 #include "runtime/function/render/render_system.h"
 
+#include "runtime/function/particle/particle_manager.h"
+
 namespace Pilot
 {
     void CameraComponent::postLoadResource(std::weak_ptr<GObject> parent_object)
@@ -142,5 +144,27 @@ namespace Pilot
         camera_swap_data.m_camera_type                     = RenderCameraType::Motor;
         camera_swap_data.m_view_matrix                     = desired_mat;
         swap_context.getLogicSwapData().m_camera_swap_data = camera_swap_data;
+
+        static float spawn_elapsed_time = 0.0f;
+        spawn_elapsed_time += delta_time;
+        if (spawn_elapsed_time > 0.4f)
+        {
+            ParticleSystemSpawnInfo spawn_info;
+            spawn_info.emitter_spawn_infos.resize(1);
+
+            spawn_info.emitter_spawn_infos[0].particle_count        = 256;
+            spawn_info.emitter_spawn_infos[0].position_base         = current_character->getPosition();
+            spawn_info.emitter_spawn_infos[0].position_variance     = {0.05f, 0.05f, 0.05f};
+            spawn_info.emitter_spawn_infos[0].acceleration_base     = {0.0f, 0.0f, -2.0f};
+            spawn_info.emitter_spawn_infos[0].acceleration_variance = {0.05f, 0.05f, 1.0f};
+            spawn_info.emitter_spawn_infos[0].size_base             = {0.02f, 0.02f, 0.02f};
+            spawn_info.emitter_spawn_infos[0].size_variance         = {0.01f, 0.01f, 0.01f};
+            spawn_info.emitter_spawn_infos[0].lifetime_base         = 1.0f;
+            spawn_info.emitter_spawn_infos[0].lifetime_variance     = 0.5f;
+
+            g_runtime_global_context.m_particle_manager->spawn(spawn_info);
+
+            spawn_elapsed_time = 0.0f;
+        }
     }
 } // namespace Pilot

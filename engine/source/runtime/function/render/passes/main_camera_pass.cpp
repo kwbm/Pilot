@@ -3042,8 +3042,8 @@ namespace Pilot
                     {
                         perdrawcall_storage_buffer_object.positions[i] =
                             node.positions[drawcall_max_instance_count * drawcall_index + i];
-                        perdrawcall_storage_buffer_object.scales[i] =
-                            node.scales[drawcall_max_instance_count * drawcall_index + i];
+                        perdrawcall_storage_buffer_object.sizes[i] =
+                            node.sizes[drawcall_max_instance_count * drawcall_index + i];
                         perdrawcall_storage_buffer_object.colors[i] =
                             node.colors[drawcall_max_instance_count * drawcall_index + i];
                     }

@@ -1,31 +1,29 @@
 #pragma once
 
+#include "runtime/function/particle/particle_common.h"
 #include "runtime/function/particle/particle_emitter.h"
 
-#include "runtime/core/math/random.h"
-#include "runtime/core/math/vector4.h"
+#include <list>
 
 namespace Pilot
 {
-    struct ParticleRenderInfo
+    struct ParticleSystemSpawnInfo
     {
-        std::vector<Vector4> positions;
-        std::vector<Vector4> scales;
-        std::vector<Vector4> colors;
+        std::vector<ParticleEmitterSpawnInfo> emitter_spawn_infos;
     };
 
     class ParticleSystem
     {
     public:
         void initialize();
-        void tick(float delta_time);
 
-        ParticleRenderInfo getParticleRenderInfo() const;
+        void spawn(const ParticleEmitterSpawnInfo& spawn_info);
+        void tick(float delta_time);
+        bool isDead() const;
+
+        size_t getAliveParticleCount() const;
 
     private:
-        ParticleEmitter m_emitter;
-        DefaultRNG      m_random_engine;
-
-        void spawn();
+        std::list<ParticleEmitter> m_emitters;
     };
 } // namespace Pilot

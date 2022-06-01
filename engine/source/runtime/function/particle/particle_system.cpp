@@ -6,81 +6,64 @@
 
 namespace Pilot
 {
-    void ParticleSystem::initialize() { spawn(); }
+    void ParticleSystem::initialize() {}
+
+    void ParticleSystem::spawn(const ParticleEmitterSpawnInfo& spawn_info)
+    {
+        ParticleEmitter& emitter = m_emitters.emplace_back();
+        emitter.spawn(spawn_info);
+    }
 
     void ParticleSystem::tick(float delta_time)
     {
-        m_emitter.simulate(delta_time, g_runtime_global_context.m_render_system->getRenderCamera()->position());
+        // simulate all particles in all emitters
+        for (ParticleEmitter& emitter : m_emitters)
+        {
+            ParticleSimulateInfo simulate_info = {delta_time, g_runtime_global_context.m_render_system->getRenderCamera()->position()};
+            emitter.simulate(simulate_info);
+        }
 
+        // kill dead emitters
+        m_emitters.remove_if([](const ParticleEmitter& emitter) { return emitter.isDead(); });
+
+        // append alive emitter render info to logic particle swap data
         RenderSwapContext& render_swap_context = g_runtime_global_context.m_render_system->getSwapContext();
         RenderSwapData&    logic_swap_data     = render_swap_context.getLogicSwapData();
 
-        ParticleRenderInfo&& particle_render_info = getParticleRenderInfo();
-        if (!particle_render_info.positions.empty())
+        for (const ParticleEmitter& emitter : m_emitters)
         {
-            ParticleSwapData particle_swap_data;
-            particle_swap_data.positions = std::move(particle_render_info.positions);
-            particle_swap_data.scales    = std::move(particle_render_info.scales);
-            particle_swap_data.colors    = std::move(particle_render_info.colors);
-            logic_swap_data.appendParticleSwapData(particle_swap_data);
-        }
-        else
-        {
-            spawn();
-        }
-    }
-
-    ParticleRenderInfo ParticleSystem::getParticleRenderInfo() const
-    {
-        ParticleRenderInfo render_info;
-        for (const auto& particle : m_emitter.getParticlePool())
-        {
-            if (particle.is_active)
+            ParticleRenderInfo&& render_info = emitter.getRenderInfo();
+            if (!render_info.positions.empty())
             {
-                Vector4 position = Vector4(particle.position.x, particle.position.y, particle.position.z, 1.0f);
-                Vector4 scale    = Vector4(particle.scale.x, particle.scale.y, particle.scale.z, 1.0f);
-                Vector4 color    = Vector4(particle.color.x, particle.color.y, particle.color.z, 1.0f);
-                render_info.positions.push_back(position);
-                render_info.scales.push_back(scale);
-                render_info.colors.push_back(color);
+                ParticleSwapData particle_swap_data;
+                particle_swap_data.positions = std::move(render_info.positions);
+                particle_swap_data.sizes     = std::move(render_info.sizes);
+                particle_swap_data.colors    = std::move(render_info.colors);
+                logic_swap_data.appendParticleSwapData(particle_swap_data);
             }
         }
-        return render_info;
     }
 
-    void ParticleSystem::spawn()
+    bool ParticleSystem::isDead() const
     {
-        const size_t          particle_count = 300;
-        std::vector<Particle> particles(particle_count);
-        for (size_t i = 0; i < particle_count; i++)
+        for (const ParticleEmitter& emitter : m_emitters)
         {
-            std::random_device r;
-            std::seed_seq      seed {r(), r(), r(), r(), r()};
-            m_random_engine.seed(seed);
-
-            float rnd0 = m_random_engine.uniformDistribution<float>(-1.0f, 1.0f);
-            float rnd1 = m_random_engine.uniformDistribution<float>(-1.0f, 1.0f);
-            float rnd2 = m_random_engine.uniformDistribution<float>(-1.0f, 1.0f);
-
-            particles[i].velocity.x += rnd0 * rnd1;
-            particles[i].velocity.y += rnd1 * rnd2;
-            particles[i].velocity.z += rnd2 * rnd0 * 4.0f;
-
-            particles[i].position.x += rnd0 * rnd1 * 2.0f;
-            particles[i].position.y += rnd1 * rnd2 * 2.0f;
-            particles[i].position.z += rnd2 * rnd0 * 4.0f;
-
-            particles[i].color.x = (rnd0 + 1.0f) * 0.5f;
-            particles[i].color.y = (rnd1 + 1.0f) * 0.5f;
-            particles[i].color.z = (rnd2 + 1.0f) * 0.5f;
-
-            particles[i].scale.x += rnd0 * 0.02f;
-            particles[i].scale.y += rnd1 * 0.02f;
-
-            particles[i].lifetime += rnd0 * rnd1 * rnd2 * 4.0f;
+            if (!emitter.isDead())
+            {
+                return false;
+            }
         }
+        return true;
+    }
 
-        m_emitter.emit(particles);
+    size_t ParticleSystem::getAliveParticleCount() const
+    {
+        size_t alive_count = 0;
+        for (const ParticleEmitter& emitter : m_emitters)
+        {
+            alive_count += emitter.getAliveParticleCount();
+        }
+        return alive_count;
     }
 
 } // namespace Pilot

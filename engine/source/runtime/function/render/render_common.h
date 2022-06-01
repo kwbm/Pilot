@@ -146,7 +146,7 @@ namespace Pilot
     {
         // TODO: 4096 may not be the best
         Vector4 positions[4096];
-        Vector4 scales[4096];
+        Vector4 sizes[4096];
         Vector4 colors[4096];
     };
 
@@ -247,7 +247,7 @@ namespace Pilot
     struct RenderParticleBillboardNode
     {
         std::vector<Vector4> positions;
-        std::vector<Vector4> scales;
+        std::vector<Vector4> sizes;
         std::vector<Vector4> colors;
     };
 

@@ -1,27 +1,45 @@
 #pragma once
 
 #include "runtime/function/particle/particle.h"
+#include "runtime/function/particle/particle_common.h"
+
+#include "runtime/core/math/random.h"
 
 #include <cstdint>
-#include <limits>
 #include <vector>
 
 namespace Pilot
 {
-    static const size_t k_max_particle_count     = 4096;
-    static const size_t k_invalid_particle_index = std::numeric_limits<std::size_t>::max();
+    struct ParticleEmitterSpawnInfo
+    {
+        size_t  particle_count;
+        Vector3 position_base;
+        Vector3 position_variance;
+        Vector3 acceleration_base;
+        Vector3 acceleration_variance;
+        Vector3 size_base;
+        Vector3 size_variance;
+        float   lifetime_base;
+        float   lifetime_variance;
+    };
 
     class ParticleEmitter
     {
     public:
         ParticleEmitter();
 
-        void emit(const std::vector<Particle>& particles);
-        void simulate(float delta_time, const Vector3& camera);
+        void spawn(const ParticleEmitterSpawnInfo& spawn_info);
+        void emit();
+        void simulate(const ParticleSimulateInfo& simulate_info);
+        bool isDead() const;
 
-        const std::vector<Particle>& getParticlePool() const;
+        ParticleRenderInfo getRenderInfo() const;
+        size_t             getAliveParticleCount() const;
 
     private:
+        ParticleEmitterSpawnInfo m_spawn_info;
+        DefaultRNG               m_random_engine;
+
         std::vector<Particle> m_particle_pool;
         std::vector<size_t>   m_dead_particle_indices;
         std::vector<size_t>   m_active_particle_lists[2];

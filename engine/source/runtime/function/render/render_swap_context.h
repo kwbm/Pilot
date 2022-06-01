@@ -39,7 +39,7 @@ namespace Pilot
     struct ParticleSwapData
     {
         std::vector<Vector4> positions;
-        std::vector<Vector4> scales;
+        std::vector<Vector4> sizes;
         std::vector<Vector4> colors;
     };
 

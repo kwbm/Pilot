@@ -111,8 +111,8 @@ namespace Pilot
                 m_particle_swap_data->positions.end(), data.positions.begin(), data.positions.end());
             m_particle_swap_data->colors.insert(
                 m_particle_swap_data->colors.end(), data.colors.begin(), data.colors.end());
-            m_particle_swap_data->scales.insert(
-                m_particle_swap_data->scales.end(), data.scales.begin(), data.scales.end());
+            m_particle_swap_data->sizes.insert(
+                m_particle_swap_data->sizes.end(), data.sizes.begin(), data.sizes.end());
         }
         else
         {
