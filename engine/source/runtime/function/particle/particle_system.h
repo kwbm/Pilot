@@ -7,6 +7,8 @@
 
 namespace Pilot
 {
+    class ParticlePool;
+
     struct ParticleSystemSpawnInfo
     {
         std::vector<ParticleEmitterSpawnInfo> emitter_spawn_infos;
@@ -15,13 +17,9 @@ namespace Pilot
     class ParticleSystem
     {
     public:
-        void initialize();
-
-        void spawn(const ParticleEmitterSpawnInfo& spawn_info);
+        void spawn(const ParticleEmitterSpawnInfo& spawn_info, std::shared_ptr<ParticlePool> particle_pool);
         void tick(float delta_time);
         bool isDead() const;
-
-        size_t getAliveParticleCount() const;
 
     private:
         std::list<ParticleEmitter> m_emitters;

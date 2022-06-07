@@ -10,11 +10,15 @@
 
 namespace Pilot
 {
+    class ParticlePool;
+
     struct ParticleEmitterSpawnInfo
     {
         size_t  particle_count;
         Vector3 position_base;
         Vector3 position_variance;
+        Vector3 velocity_base;
+        Vector3 velocity_variance;
         Vector3 acceleration_base;
         Vector3 acceleration_variance;
         Vector3 size_base;
@@ -26,31 +30,13 @@ namespace Pilot
     class ParticleEmitter
     {
     public:
-        ParticleEmitter();
-
-        void spawn(const ParticleEmitterSpawnInfo& spawn_info);
-        void emit();
-        void simulate(const ParticleSimulateInfo& simulate_info);
+        void spawn(const ParticleEmitterSpawnInfo& spawn_info, std::shared_ptr<ParticlePool> particle_pool);
         bool isDead() const;
 
-        ParticleRenderInfo getRenderInfo() const;
-        size_t             getAliveParticleCount() const;
-
     private:
-        ParticleEmitterSpawnInfo m_spawn_info;
-        DefaultRNG               m_random_engine;
+        DefaultRNG m_random_engine;
 
-        std::vector<Particle> m_particle_pool;
-        std::vector<size_t>   m_dead_particle_indices;
-        std::vector<size_t>   m_active_particle_lists[2];
-        std::vector<float>    m_particle_distances;
-
-        uint8_t m_active_list_index {0};
-        uint8_t m_process_list_index {1};
-
-        int32_t m_alive_particle_count {0};
-        int32_t m_dead_particle_count {0};
-        int32_t m_real_emit_count {0};
-        int32_t m_alive_count_after_simulation {0};
+        std::vector<size_t>           m_particle_pool_indices;
+        std::shared_ptr<ParticlePool> m_particle_pool_ptr;
     };
 } // namespace Pilot

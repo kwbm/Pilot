@@ -152,16 +152,28 @@ namespace Pilot
             ParticleSystemSpawnInfo spawn_info;
             spawn_info.emitter_spawn_infos.resize(1);
 
-            spawn_info.emitter_spawn_infos[0].particle_count        = 256;
+            spawn_info.emitter_spawn_infos[0].particle_count        = 128;
             spawn_info.emitter_spawn_infos[0].position_base         = current_character->getPosition();
             spawn_info.emitter_spawn_infos[0].position_variance     = {0.05f, 0.05f, 0.05f};
+            spawn_info.emitter_spawn_infos[0].velocity_base         = {0.0f, 0.0f, 0.5f};
+            spawn_info.emitter_spawn_infos[0].velocity_variance     = {0.2f, 0.2f, 0.2f};
             spawn_info.emitter_spawn_infos[0].acceleration_base     = {0.0f, 0.0f, -2.0f};
             spawn_info.emitter_spawn_infos[0].acceleration_variance = {0.05f, 0.05f, 1.0f};
-            spawn_info.emitter_spawn_infos[0].size_base             = {0.02f, 0.02f, 0.02f};
-            spawn_info.emitter_spawn_infos[0].size_variance         = {0.01f, 0.01f, 0.01f};
+            spawn_info.emitter_spawn_infos[0].size_base             = {0.01f, 0.01f, 0.01f};
+            spawn_info.emitter_spawn_infos[0].size_variance         = {0.005f, 0.005f, 0.005f};
             spawn_info.emitter_spawn_infos[0].lifetime_base         = 1.0f;
             spawn_info.emitter_spawn_infos[0].lifetime_variance     = 0.5f;
 
+            g_runtime_global_context.m_particle_manager->spawn(spawn_info);
+
+            spawn_info.emitter_spawn_infos[0].particle_count        = 512;
+            spawn_info.emitter_spawn_infos[0].position_base         = {5.71f, 13.53f, 2.0f};
+            spawn_info.emitter_spawn_infos[0].velocity_base         = {0.0f, 0.0f, 2.5f};
+            spawn_info.emitter_spawn_infos[0].velocity_variance     = {1.0f, 1.0f, 0.5f};
+            spawn_info.emitter_spawn_infos[0].acceleration_base     = {0.0f, 0.0f, -2.5f};
+            spawn_info.emitter_spawn_infos[0].acceleration_variance = {0.05f, 0.05f, 0.5f};
+            spawn_info.emitter_spawn_infos[0].size_base             = {0.02f, 0.02f, 0.02f};
+            spawn_info.emitter_spawn_infos[0].size_variance         = {0.01f, 0.01f, 0.01f};
             g_runtime_global_context.m_particle_manager->spawn(spawn_info);
 
             spawn_elapsed_time = 0.0f;
